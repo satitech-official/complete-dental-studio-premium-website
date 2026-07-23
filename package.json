@@ -1,0 +1,40 @@
+{
+  "name": "complete-dental-studio",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@hookform/resolvers": "^3.9.1",
+    "embla-carousel-react": "^8.5.1",
+    "framer-motion": "^11.15.0",
+    "gsap": "^3.12.5",
+    "lenis": "^1.1.17",
+    "lottie-react": "^2.4.0",
+    "lucide-react": "^0.468.0",
+    "next": "^16.2.11",
+    "react": "^19.2.0",
+    "react-compare-slider": "^3.1.0",
+    "react-dom": "^19.2.0",
+    "react-hook-form": "^7.54.2",
+    "swiper": "^14.0.6",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "autoprefixer": "^10.4.20",
+    "eslint": "^9.32.0",
+    "eslint-config-next": "^16.2.11",
+    "postcss": "^8.5.10",
+    "tailwindcss": "^3.4.17"
+  },
+  "overrides": {
+    "postcss": "^8.5.10",
+    "next": {
+      "sharp": "^0.35.0"
+    }
+  }
+}
