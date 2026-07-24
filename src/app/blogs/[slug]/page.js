@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowRight, CalendarCheck, Share2 } from "lucide-react";
@@ -6,6 +7,7 @@ import { cleanJsonLd, createMetadata } from "@/lib/seo";
 import { blogPostSchema, breadcrumbSchema } from "@/lib/schema";
 import { blogPosts } from "@/data/blogs";
 import { clinic } from "@/data/clinic";
+import { getBlogVisual } from "@/data/contentImages";
 
 export function generateStaticParams() {
   return blogPosts.map((post) => ({ slug: post.slug }));
@@ -24,6 +26,7 @@ export function generateMetadata({ params }) {
 export default function BlogDetailPage({ params }) {
   const post = blogPosts.find((item) => item.slug === params.slug);
   if (!post) notFound();
+  const visual = getBlogVisual(post.slug);
   const related = blogPosts.filter((item) => item.slug !== post.slug).slice(0, 3);
   const breadcrumbs = [
     { name: "Blogs", href: "/blogs" },
@@ -34,24 +37,49 @@ export default function BlogDetailPage({ params }) {
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: cleanJsonLd(blogPostSchema(post)) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: cleanJsonLd(breadcrumbSchema(breadcrumbs)) }} />
-      <PageHero eyebrow={post.category} title={post.title} copy={post.summary} breadcrumbs={breadcrumbs} />
+      <PageHero
+        eyebrow={post.category}
+        title={post.title}
+        copy={post.summary}
+        breadcrumbs={breadcrumbs}
+        image={
+          <Image
+            src={visual.src}
+            alt={visual.alt}
+            width={1800}
+            height={1200}
+            priority
+            className="h-full min-h-[280px] w-full object-cover"
+          />
+        }
+      />
       <section className="section bg-white">
         <div className="container grid gap-10 lg:grid-cols-[0.72fr_1.28fr]">
-          <aside className="panel h-fit p-6">
-            <p className="eyebrow">Article Details</p>
-            <dl className="mt-5 grid gap-3 text-sm text-slate">
-              <div><dt className="font-extrabold text-deep">Published</dt><dd>{post.date}</dd></div>
-              <div><dt className="font-extrabold text-deep">Updated</dt><dd>{post.updated}</dd></div>
-              <div><dt className="font-extrabold text-deep">Reading time</dt><dd>{post.readingTime}</dd></div>
-              <div><dt className="font-extrabold text-deep">Author</dt><dd>{clinic.doctor}</dd></div>
-            </dl>
-            <button className="button-secondary mt-6 w-full" type="button">
-              <Share2 className="h-4 w-4" aria-hidden="true" />
-              Share readiness
-            </button>
-            {post.draft ? <p className="mt-4 rounded-[8px] bg-ice p-4 text-xs font-bold text-amber">Editable draft - dental team review required before publishing.</p> : null}
+          <aside className="panel h-fit overflow-hidden">
+            <div className="relative aspect-[16/10] bg-ice">
+              <Image src={visual.src} alt={visual.alt} fill sizes="(min-width: 1024px) 30vw, 100vw" className="object-cover" />
+            </div>
+            <div className="p-6">
+              <p className="eyebrow">Article Details</p>
+              <dl className="mt-5 grid gap-3 text-sm text-slate">
+                <div><dt className="font-extrabold text-deep">Published</dt><dd>{post.date}</dd></div>
+                <div><dt className="font-extrabold text-deep">Updated</dt><dd>{post.updated}</dd></div>
+                <div><dt className="font-extrabold text-deep">Reading time</dt><dd>{post.readingTime}</dd></div>
+                <div><dt className="font-extrabold text-deep">Author</dt><dd>{clinic.doctor}</dd></div>
+              </dl>
+              <button className="button-secondary mt-6 w-full" type="button">
+                <Share2 className="h-4 w-4" aria-hidden="true" />
+                Share readiness
+              </button>
+              {post.draft ? <p className="mt-4 rounded-[8px] bg-ice p-4 text-xs font-bold text-amber">Editable draft - dental team review required before publishing.</p> : null}
+            </div>
           </aside>
           <article className="prose prose-slate max-w-none">
+            <div className="panel not-prose mb-8 overflow-hidden">
+              <div className="relative aspect-[16/8] bg-ice">
+                <Image src={visual.src} alt={visual.alt} fill sizes="(min-width: 1024px) 65vw, 100vw" className="object-cover" />
+              </div>
+            </div>
             <nav className="panel not-prose mb-8 p-5" aria-label="Table of contents">
               <p className="font-display text-lg font-extrabold text-ink">Table of Contents</p>
               <ol className="mt-3 grid gap-2 text-sm font-bold text-slate">
@@ -74,12 +102,20 @@ export default function BlogDetailPage({ params }) {
             <div className="mt-10">
               <h2 className="heading-md font-extrabold text-ink">Related Articles</h2>
               <div className="mt-5 grid gap-4 md:grid-cols-3">
-                {related.map((item) => (
-                  <Link className="panel p-5 no-underline transition hover:-translate-y-1 hover:shadow-glow" href={`/blogs/${item.slug}`} key={item.slug}>
-                    <p className="font-display text-lg font-extrabold text-ink">{item.title}</p>
-                    <p className="mt-2 text-sm text-slate">Read More <ArrowRight className="inline h-4 w-4" aria-hidden="true" /></p>
-                  </Link>
-                ))}
+                {related.map((item) => {
+                  const relatedVisual = getBlogVisual(item.slug);
+                  return (
+                    <Link className="panel group overflow-hidden no-underline transition hover:-translate-y-1 hover:shadow-glow" href={`/blogs/${item.slug}`} key={item.slug}>
+                      <div className="relative aspect-[16/10] bg-ice">
+                        <Image src={relatedVisual.src} alt={relatedVisual.alt} fill sizes="(min-width: 768px) 30vw, 100vw" className="object-cover transition duration-500 group-hover:scale-105" />
+                      </div>
+                      <div className="p-5">
+                        <p className="font-display text-lg font-extrabold text-ink">{item.title}</p>
+                        <p className="mt-2 text-sm text-slate">Read More <ArrowRight className="inline h-4 w-4" aria-hidden="true" /></p>
+                      </div>
+                    </Link>
+                  );
+                })}
               </div>
             </div>
             <Link className="button-primary not-prose mt-8" href="/book-appointment">
