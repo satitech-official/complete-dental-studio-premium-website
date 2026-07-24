@@ -2,6 +2,8 @@ import { blogPosts } from "@/data/blogs";
 import { treatments } from "@/data/treatments";
 import { siteUrl } from "@/lib/seo";
 
+export const dynamic = "force-static";
+
 const staticRoutes = [
   "",
   "/about-doctor",
