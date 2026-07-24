@@ -1,9 +1,11 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import { ArrowRight, Search } from "lucide-react";
 import { blogCategories, blogPosts } from "@/data/blogs";
+import { getBlogVisual } from "@/data/contentImages";
 
 export function BlogSearch({ limit }) {
   const [query, setQuery] = useState("");
@@ -42,22 +44,32 @@ export function BlogSearch({ limit }) {
       ) : null}
 
       <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-4">
-        {posts.map((post) => (
-          <article className="panel overflow-hidden" key={post.slug}>
-            <div className="image-placeholder-grid min-h-44 p-5">
-              <span className="rounded-full bg-white/90 px-3 py-1 text-xs font-extrabold text-teal">{post.category}</span>
-            </div>
-            <div className="p-5">
-              <p className="text-xs font-bold text-slate">{post.date} - {post.readingTime}</p>
-              <h3 className="mt-2 font-display text-xl font-extrabold text-ink">{post.title}</h3>
-              <p className="mt-3 text-sm leading-7 text-slate">{post.summary}</p>
-              {post.draft ? <p className="mt-3 text-xs font-bold text-amber">Editable draft - clinic review required</p> : null}
-              <Link className="button-secondary mt-5 min-h-10 px-4 text-sm" href={`/blogs/${post.slug}`}>
-                Read More <ArrowRight className="h-4 w-4" aria-hidden="true" />
+        {posts.map((post) => {
+          const visual = getBlogVisual(post.slug);
+          return (
+            <article className="panel group flex h-full flex-col overflow-hidden" key={post.slug}>
+              <Link className="relative block aspect-[16/10] overflow-hidden bg-ice" href={`/blogs/${post.slug}`} aria-label={`Read ${post.title}`}>
+                <Image
+                  src={visual.src}
+                  alt={visual.alt}
+                  fill
+                  sizes="(min-width: 1024px) 23vw, (min-width: 768px) 46vw, 100vw"
+                  className="object-cover transition duration-500 group-hover:scale-105"
+                />
+                <span className="absolute left-4 top-4 rounded-full bg-white/95 px-3 py-1 text-xs font-extrabold text-teal shadow-sm">{post.category}</span>
               </Link>
-            </div>
-          </article>
-        ))}
+              <div className="flex flex-1 flex-col p-5">
+                <p className="text-xs font-bold text-slate">{post.date} - {post.readingTime}</p>
+                <h3 className="mt-2 font-display text-xl font-extrabold text-ink">{post.title}</h3>
+                <p className="mt-3 flex-1 text-sm leading-7 text-slate">{post.summary}</p>
+                {post.draft ? <p className="mt-3 text-xs font-bold text-amber">Editable draft - clinic review required</p> : null}
+                <Link className="button-secondary mt-5 min-h-10 px-4 text-sm" href={`/blogs/${post.slug}`}>
+                  Read More <ArrowRight className="h-4 w-4" aria-hidden="true" />
+                </Link>
+              </div>
+            </article>
+          );
+        })}
       </div>
     </div>
   );
