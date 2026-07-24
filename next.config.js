@@ -1,7 +1,18 @@
+const repositoryName = "complete-dental-studio-premium-website";
+const isGitHubActions = process.env.GITHUB_ACTIONS === "true";
+const basePath = isGitHubActions ? `/${repositoryName}` : "";
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  output: "export",
+  trailingSlash: true,
+  basePath,
+  assetPrefix: basePath,
   images: {
-    formats: ["image/avif", "image/webp"]
+    unoptimized: true
+  },
+  env: {
+    NEXT_PUBLIC_BASE_PATH: basePath
   },
   turbopack: {
     root: __dirname
