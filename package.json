@@ -2,11 +2,14 @@
   "name": "complete-dental-studio",
   "version": "1.0.0",
   "private": true,
+  "engines": {
+    "node": ">=22.13.0"
+  },
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "next build && node scripts/prepare-pages.mjs",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "eslint . --ignore-pattern out --ignore-pattern .next"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.1",
